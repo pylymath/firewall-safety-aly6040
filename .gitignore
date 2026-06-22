@@ -1,0 +1,33 @@
+# Large raw data (rebuild via train_models.py or download separately)
+raw_adversarial_jailbreaks.csv
+raw_clean_conversations.csv
+models/dataset_cache.parquet
+
+# Local DistilBERT copy (~268 MB) — app loads from the HF Hub at runtime.
+# Keep this out of the repo so it stays within Streamlit Cloud's size limits.
+distilbert_model/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Streamlit / logs
+st_out.log
+st_err.log
+.streamlit/secrets.toml
+
+# Node (only used locally to build the Word handoff doc)
+node_modules/
+package.json
+package-lock.json
+
+# Build artifacts
+*.pdf
+
+# Redundant Colab download (its useful files were copied into the project root)
+bert_output (3)/
+
+# Note: models/similarity_bank.npz IS committed on purpose, so the deployed app
+# can run the similarity layer without the raw CSVs to rebuild it.
