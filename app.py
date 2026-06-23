@@ -120,8 +120,9 @@ EXAMPLES = {
 
 
 def init_state():
-    if "prompt_text" not in st.session_state:
-        st.session_state.prompt_text = ""
+    # Single source of truth = the text_area's own widget key.
+    if "prompt_area" not in st.session_state:
+        st.session_state.prompt_area = ""
 
 
 def render_verdict(col, model_label, label, proba):
@@ -140,7 +141,7 @@ def render_verdict(col, model_label, label, proba):
 
 # ============================== TAB 1 ====================================== #
 def tab_classifier():
-    st.header("🛡️ Live Prompt Classifier")
+    st.header("Live Prompt Classifier")
     st.caption(
         "Paste a prompt and check it against the fine-tuned DistilBERT model and the "
         "best statistical model, side by side."
@@ -149,20 +150,20 @@ def tab_classifier():
     # Example buttons
     st.write("**Try an example:**")
     cols = st.columns(len(EXAMPLES))
+    # Buttons write to the text_area's own key (prompt_area). Because they run
+    # before the widget on each rerun, the new value shows up in the box.
     for (name, text), c in zip(EXAMPLES.items(), cols):
         if c.button(name, use_container_width=True):
-            st.session_state.prompt_text = text
+            st.session_state.prompt_area = text
 
     prompt = st.text_area(
         "Prompt to inspect",
-        value=st.session_state.prompt_text,
         height=180,
         key="prompt_area",
         placeholder="Type or paste a prompt here…",
     )
-    st.session_state.prompt_text = prompt
 
-    check = st.button("🔍 Check Prompt", type="primary", use_container_width=True)
+    check = st.button("Check Prompt", type="primary", use_container_width=True)
 
     if not check:
         return
@@ -195,12 +196,12 @@ def tab_classifier():
     st.divider()
     if blocked:
         st.markdown(
-            f"<div class='verdict-blocked'>🚫 FIREWALL: BLOCKED</div>",
+            f"<div class='verdict-blocked'>FIREWALL: BLOCKED</div>",
             unsafe_allow_html=True,
         )
     else:
         st.markdown(
-            f"<div class='verdict-allowed'>✅ FIREWALL: ALLOWED</div>",
+            f"<div class='verdict-allowed'>FIREWALL: ALLOWED</div>",
             unsafe_allow_html=True,
         )
     st.caption(f"Reason: {reason}.")
@@ -223,7 +224,7 @@ def tab_classifier():
     # Semantic similarity layer
     if sim is not None:
         st.divider()
-        st.subheader("🧭 Semantic similarity layer")
+        st.subheader("Semantic similarity layer")
         st.caption(
             "Cosine similarity of the prompt against a bank of 2,071 known "
             "jailbreaks (vs. a benign bank for contrast). Block ≥ 0.65, "
@@ -238,8 +239,8 @@ def tab_classifier():
 
     # Rule-based explanation panel
     st.divider()
-    st.subheader("🔎 Rule-based signal panel")
-    st.caption("Plain heuristics — not a model. Shows which red flags are present.")
+    st.subheader("Rule-based signal panel")
+    #st.caption("Plain heuristics — not a model. Shows which red flags are present.")
     signals = mu.rule_based_signals(prompt)
     n_flagged = sum(1 for flagged, _, _ in signals if flagged)
     st.markdown(f"**{n_flagged} of {len(signals)} signals triggered.**")
@@ -262,7 +263,7 @@ def tab_classifier():
 
 # ============================== TAB 2 ====================================== #
 def tab_report():
-    st.header("📊 Interactive Report — Enterprise Sentinel")
+    st.header("Interactive Report")
 
     # 1. The Problem
     st.subheader("1 · The Problem")
@@ -425,8 +426,8 @@ def _render_length_plot():
 def main():
     init_state()
     with st.sidebar:
-        st.title("🛡️ Enterprise Sentinel")
-        st.caption("Adversarial Prompt Firewall")
+        st.title("Adversarial Prompt Firewall")
+        #st.caption("Adversarial Prompt Firewall")
         st.markdown("---")
         section = st.radio(
             "Navigate", ["Live Prompt Classifier", "Interactive Report"]
@@ -436,7 +437,7 @@ def main():
             f"<small>DistilBERT repo:<br><code>{DISTILBERT_REPO_ID}</code></small>",
             unsafe_allow_html=True,
         )
-        st.caption("Graduate Data Mining · Final Phase")
+        st.caption("Graduate Data Mining · Final Project")
 
     if section == "Live Prompt Classifier":
         tab_classifier()
