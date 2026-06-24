@@ -1,6 +1,6 @@
-# 🛡️ Enterprise Sentinel — Adversarial Prompt Firewall
+# Adversarial Prompt Firewall
 
-**▶️ Live demo:** https://firewall-safety-aly6040.streamlit.app
+**Live demo:** https://firewall-safety-aly6040.streamlit.app
 
 A Streamlit app that classifies LLM prompts as **jailbreak attempts**
 (`is_adversarial = 1`) or **normal user traffic** (`is_adversarial = 0`). It ties
